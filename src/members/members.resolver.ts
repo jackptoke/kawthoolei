@@ -1,9 +1,8 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { MembersService } from './members.service';
 import { Member } from './entities/member.entity';
 import { CreateMemberInput } from './dto/create-member.input';
 import { UpdateMemberInput } from './dto/update-member.input';
-import { DeleteResult } from 'typeorm';
 import { DeleteMemberPayload } from './dto/delete-member.payload';
 
 @Resolver(() => Member)

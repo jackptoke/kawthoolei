@@ -4,5 +4,8 @@ import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
 @InputType()
 export class UpdateArticleInput extends PartialType(CreateArticleInput) {
   @Field(() => Int)
-  id: number;
+  articleId: number;
+
+  @Field(() => Boolean)
+  publish: boolean;
 }

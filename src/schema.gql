@@ -6,23 +6,59 @@ type Article {
   """A unique identification number of the article"""
   articleId: Int!
   author: Member!
+  category: CATEGORY!
+  comments: [Comment]!
 
   """The content of the article."""
   content: String!
   createdDate: DateTime!
-  publishedDate: DateTime!
+  publishedDate: DateTime
 
   """The title of the article that encourages readers to click the article"""
   title: String!
 }
 
+"""The category in which the article belong to"""
+enum CATEGORY {
+  BUSINESS
+  EDUCATION
+  ENVIRONMENT
+  HEALTH
+  LIFESTYLE
+  OPINION
+  POLITICS
+  SPORTNEWS
+  THOOLEI_NEWS
+  WORLD_NEWS
+}
+
+type Comment {
+  article: Article!
+  childrenComments: Comment!
+
+  """The unique identification number of a comment"""
+  commentId: Int!
+  createdDate: DateTime!
+  member: Member!
+  message: String!
+  parentComment: Comment
+}
+
 input CreateArticleInput {
+  authorId: String!
+  category: CATEGORY!
+
   """The content of the article."""
   content: String!
-  publishedDate: Boolean!
+  publish: Boolean
 
   """The title of the article that encourages readers to click the article"""
   title: String!
+}
+
+input CreateCommentInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
 }
 
 input CreateMemberInput {
@@ -58,33 +94,59 @@ type Member {
   gender: Gender!
   imageUrl: String
   isDeactivated: Boolean!
+  role: Role!
   username: String!
 }
 
 type Mutation {
   createArticle(createArticleInput: CreateArticleInput!): Article!
+  createComment(createCommentInput: CreateCommentInput!): Comment!
   createMember(createMemberInput: CreateMemberInput!): Member!
   removeArticle(id: Int!): Article!
+  removeComment(id: Int!): Comment!
   removeMember(username: String!): DeleteMemberPayload!
   updateArticle(updateArticleInput: UpdateArticleInput!): Article!
+  updateComment(updateCommentInput: UpdateCommentInput!): Comment!
   updateMember(updateMemberInput: UpdateMemberInput!): Member!
 }
 
 type Query {
   article(id: Int!): Article!
   articles: [Article!]!
+  comment(commentId: Int!): Comment!
+  comments(articleId: Int!): [Comment!]!
   member(username: String!): Member!
   members: [Member!]!
 }
 
+"""
+Regular member can read, create article and edit 
+his/her own article.  Editor can edit other people's articles, as well as do what regular member can do.  
+Moderator doesn't edit but can unpublish article and move it to other category.
+"""
+enum Role {
+  EDITOR
+  MODERATOR
+  REGULAR
+}
+
 input UpdateArticleInput {
+  articleId: Int!
+  authorId: String
+  category: CATEGORY
+
   """The content of the article."""
   content: String
-  id: Int!
-  publishedDate: Boolean
+  publish: Boolean!
 
   """The title of the article that encourages readers to click the article"""
   title: String
+}
+
+input UpdateCommentInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
 }
 
 input UpdateMemberInput {

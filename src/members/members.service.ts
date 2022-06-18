@@ -43,7 +43,10 @@ export class MembersService {
   }
 
   async findAll(): Promise<Member[]> {
-    return this.membersRepo.find();
+    return this.membersRepo.find({
+      relations: ['articles'],
+      relationLoadStrategy: 'query',
+    });
   }
 
   async findOne(username: string): Promise<Member> {
