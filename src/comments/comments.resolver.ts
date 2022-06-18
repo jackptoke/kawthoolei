@@ -3,6 +3,8 @@ import { CommentsService } from './comments.service';
 import { Comment } from './entities/comment.entity';
 import { CreateCommentInput } from './dto/create-comment.input';
 import { UpdateCommentInput } from './dto/update-comment.input';
+import { DeleteCommentInput } from './dto/delete-comment.input';
+import { DeleteCommentPayload } from './dto/delete-comment.payload';
 
 @Resolver(() => Comment)
 export class CommentsResolver {
@@ -29,14 +31,14 @@ export class CommentsResolver {
   updateComment(
     @Args('updateCommentInput') updateCommentInput: UpdateCommentInput,
   ) {
-    return this.commentsService.update(
-      updateCommentInput.id,
-      updateCommentInput,
-    );
+    return this.commentsService.update(updateCommentInput);
   }
 
-  @Mutation(() => Comment)
-  removeComment(@Args('id', { type: () => Int }) id: number) {
-    return this.commentsService.remove(id);
+  @Mutation(() => DeleteCommentPayload)
+  removeComment(
+    @Args('deleteCommentInput', { type: () => DeleteCommentInput })
+    deleteCommentInput: DeleteCommentInput,
+  ) {
+    return this.commentsService.remove(deleteCommentInput);
   }
 }

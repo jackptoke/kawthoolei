@@ -41,7 +41,13 @@ export class ArticlesService {
 
   async findAll(): Promise<Article[]> {
     return await this.articleRepo.find({
-      relations: ['author'],
+      relations: [
+        'author',
+        'comments',
+        'comments.member',
+        'comments.childrenComments',
+        'comments.childrenComments.member',
+      ],
       relationLoadStrategy: 'query',
     });
   }
@@ -53,6 +59,11 @@ export class ArticlesService {
       })
       .getOne();
   }
+
+  /*
+    An article's content, title, publishedDate and category can be changed, 
+    but not its author, created date and children.
+  */
 
   async update(updateArticleInput: UpdateArticleInput) {
     const { articleId, title, content, category, publish } = updateArticleInput;
@@ -81,13 +92,17 @@ export class ArticlesService {
     return article;
   }
 
+  /*
+  Soft deleting the article
+  */
+
   async remove(articleId: number): Promise<DeleteArticlePayload> {
     const article = await this.findOne(articleId);
     if (!article)
       throw new Error(`Article with id ${articleId} doesn't exist.`);
     const payload = new DeleteArticlePayload();
     const result = await this.getArticlesBaseQuery()
-      .delete()
+      .softDelete()
       .from(Article)
       .where('articleId = :articleId', { articleId: articleId })
       .execute();

@@ -2,11 +2,13 @@ import { ObjectType, Field, Int } from '@nestjs/graphql';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Member } from '../../members/entities/member.entity';
 import { Article } from '../../articles/entities/article.entity';
@@ -28,6 +30,13 @@ export class Comment {
   @CreateDateColumn()
   createdDate: Date;
 
+  @Field(() => Date)
+  @UpdateDateColumn()
+  updatedDate: Date;
+
+  @DeleteDateColumn()
+  deleteDate: Date;
+
   @Field(() => Member, { nullable: false })
   @ManyToOne(() => Member, { nullable: false })
   @JoinColumn({ name: 'memberId', referencedColumnName: 'username' })
@@ -38,14 +47,22 @@ export class Comment {
   @JoinColumn({ name: 'articleId', referencedColumnName: 'articleId' })
   article: Article;
 
-  @Field(() => Comment)
-  @OneToMany(() => Comment, (childComment) => childComment.parentComment)
+  @Field(() => [Comment], { nullable: 'items' })
+  @OneToMany(() => Comment, (childComment) => childComment.parentComment, {
+    nullable: true,
+  })
   childrenComments: Comment[];
 
   @Field(() => Comment, { nullable: true })
   @ManyToOne(() => Comment, (parentComment) => parentComment.childrenComments, {
     nullable: true,
+    onDelete: 'SET NULL',
+    cascade: true,
   })
   @JoinColumn({ name: 'parentCommentId', referencedColumnName: 'commentId' })
   parentComment?: Comment;
+
+  // @Field(() => Int, { nullable: true })
+  // @Column({ nullable: true, default: null })
+  // parentCommentId: number;
 }

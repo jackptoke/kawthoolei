@@ -5,24 +5,30 @@ import { Comment } from 'src/comments/entities/comment.entity';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 export enum CATEGORY {
-  THOOLEI_NEWS,
-  WORLD_NEWS,
-  POLITICS,
-  BUSINESS,
-  SPORTNEWS,
-  EDUCATION,
-  HEALTH,
-  ENVIRONMENT,
-  OPINION,
-  LIFESTYLE,
+  Thoolei_News,
+  World_News,
+  Politics,
+  Arts,
+  Business,
+  Commentary,
+  Education,
+  Environment,
+  Health,
+  History,
+  Lifestyle,
+  Satire,
+  Sports,
+  Technology,
 }
 
 registerEnumType(CATEGORY, {
@@ -53,6 +59,14 @@ export class Article {
   @Field(() => Date)
   @CreateDateColumn()
   createdDate: Date;
+
+  @Field(() => Date)
+  @UpdateDateColumn()
+  updateddate: Date;
+
+  @Field(() => Date)
+  @DeleteDateColumn()
+  deletedDate?: Date;
 
   @Field(() => Date, { nullable: true })
   @Column('timestamp', { nullable: true })
