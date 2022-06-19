@@ -8,9 +8,10 @@ export enum Gender {
 }
 
 export enum Role {
-  REGULAR,
-  EDITOR,
-  MODERATOR,
+  REGULAR = 'Regular',
+  EDITOR = 'Editor',
+  MODERATOR = 'Moderator',
+  SUPERADMIN = 'Super',
 }
 
 registerEnumType(Gender, {

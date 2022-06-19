@@ -5,12 +5,15 @@ import { CreateCommentInput } from './dto/create-comment.input';
 import { UpdateCommentInput } from './dto/update-comment.input';
 import { DeleteCommentInput } from './dto/delete-comment.input';
 import { DeleteCommentPayload } from './dto/delete-comment.payload';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UseGuards } from '@nestjs/common';
 
 @Resolver(() => Comment)
 export class CommentsResolver {
   constructor(private readonly commentsService: CommentsService) {}
 
   @Mutation(() => Comment)
+  @UseGuards(JwtAuthGuard)
   createComment(
     @Args('createCommentInput') createCommentInput: CreateCommentInput,
   ) {
@@ -28,6 +31,7 @@ export class CommentsResolver {
   }
 
   @Mutation(() => Comment)
+  @UseGuards(JwtAuthGuard)
   updateComment(
     @Args('updateCommentInput') updateCommentInput: UpdateCommentInput,
   ) {
@@ -35,6 +39,7 @@ export class CommentsResolver {
   }
 
   @Mutation(() => DeleteCommentPayload)
+  @UseGuards(JwtAuthGuard)
   removeComment(
     @Args('deleteCommentInput', { type: () => DeleteCommentInput })
     deleteCommentInput: DeleteCommentInput,

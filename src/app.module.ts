@@ -11,6 +11,7 @@ import { Member } from './members/entities/member.entity';
 import { ArticlesModule } from './articles/articles.module';
 import { Article } from './articles/entities/article.entity';
 import { CommentsModule } from './comments/comments.module';
+import { AuthModule } from './auth/auth.module';
 
 const typeOrmModule = TypeOrmModule.forRoot({
   type: 'mysql',
@@ -32,7 +33,14 @@ const graphQLModule = GraphQLModule.forRoot<ApolloDriverConfig>({
 });
 
 @Module({
-  imports: [graphQLModule, typeOrmModule, MembersModule, ArticlesModule, CommentsModule],
+  imports: [
+    graphQLModule,
+    typeOrmModule,
+    AuthModule,
+    MembersModule,
+    ArticlesModule,
+    CommentsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

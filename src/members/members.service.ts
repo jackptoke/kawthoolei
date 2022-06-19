@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -10,6 +10,7 @@ import { DeleteMemberPayload } from './dto/delete-member.payload';
 @Injectable()
 export class MembersService {
   private saltOrRound = 10;
+  private readonly logger = new Logger();
 
   constructor(
     @InjectRepository(Member) private readonly membersRepo: Repository<Member>,
@@ -19,8 +20,8 @@ export class MembersService {
     return this.membersRepo.createQueryBuilder().orderBy('username', 'DESC');
   }
 
-  private hashPassword = (password: string): string => {
-    return bcrypt.hashSync(password, this.saltOrRound);
+  hashPassword = async (password: string): Promise<string> => {
+    return await bcrypt.hash(password, this.saltOrRound);
   };
 
   async create(createMemberInput: CreateMemberInput): Promise<Member> {
@@ -35,11 +36,23 @@ export class MembersService {
     newMember.gender = createMemberInput.gender;
     newMember.username = createMemberInput.username;
     newMember.imageUrl = createMemberInput.imageUrl;
-    newMember.password = this.hashPassword(createMemberInput.password);
+    newMember.password = await this.hashPassword(createMemberInput.password);
 
     const createdMember = this.membersRepo.create(newMember);
 
     return this.membersRepo.save(createdMember);
+  }
+
+  async authenticateUser(username: string, password: string): Promise<Member> {
+    const member = await this.findOne(username);
+    console.log('[pass auth] ', member.password);
+
+    if (member && (await bcrypt.compare(password, member.password)))
+      return member;
+    else {
+      this.logger.debug(`Invalid password or username.`);
+      throw new UnauthorizedException();
+    }
   }
 
   async findAll(): Promise<Member[]> {
@@ -66,7 +79,7 @@ export class MembersService {
     if (!fullName) fullName = member.fullName;
     if (gender === undefined) gender = member.gender;
     if (!password) password = member.password;
-    else password = this.hashPassword(password);
+    else password = await this.hashPassword(password);
     if (!imageUrl) imageUrl = member.imageUrl;
     if (isDeactivated === undefined) isDeactivated = member.isDeactivated;
 

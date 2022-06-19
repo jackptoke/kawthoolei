@@ -20,6 +20,11 @@ type Article {
   updateddate: DateTime!
 }
 
+input AuthInput {
+  password: String!
+  username: String!
+}
+
 """The category in which the article belong to"""
 enum CATEGORY {
   Arts
@@ -107,6 +112,11 @@ enum Gender {
   MALE
 }
 
+type LoginResponse {
+  access_token: String!
+  member: Member!
+}
+
 type Member {
   articles: [Article]!
   email: String!
@@ -122,6 +132,7 @@ type Mutation {
   createArticle(createArticleInput: CreateArticleInput!): Article!
   createComment(createCommentInput: CreateCommentInput!): Comment!
   createMember(createMemberInput: CreateMemberInput!): Member!
+  login(authInput: AuthInput!): LoginResponse!
   removeArticle(id: Int!): Article!
   removeComment(deleteCommentInput: DeleteCommentInput!): DeleteCommentPayload!
   removeMember(username: String!): DeleteMemberPayload!
@@ -148,6 +159,7 @@ enum Role {
   EDITOR
   MODERATOR
   REGULAR
+  SUPERADMIN
 }
 
 input UpdateArticleInput {
